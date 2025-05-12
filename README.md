@@ -1,7 +1,7 @@
 
 # AWS CDK app
 
-A Github template using the AWS CDK to create an ECS infrastructure project
+A Github template using the AWS CDK to create an ECS infrastructure project for deploying Model-AD.
 
 # Prerequisites
 
@@ -83,10 +83,12 @@ Please install pre-commit, once installed the file validations will
 automatically run on every commit.  Alternatively you can manually
 execute the validations by running `pre-commit run --all-files`.
 
+Create a [GitHub classic PAT](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) with `read:packages` access, then create a .env file using .env.example as a template.
+
 Verify CDK to Cloudformation conversion by running [cdk synth]:
 
 ```console
-ENV=dev cdk synth
+env $(cat .env | xargs) cdk synth
 ```
 
 The Cloudformation output is saved to the `cdk.out` folder
@@ -111,7 +113,7 @@ Set environment variables for each environment in the [app.py](./app.py) file:
 environment_variables = {
     "VPC_CIDR": "10.254.192.0/24",
     "FQDN": "dev.app.io",
-    "CERTIFICATE_ARN": "arn:aws:acm:us-east-1:XXXXXXXXXXX:certificate/0e9682f6-3ffa-46fb-9671-b6349f5164d6",
+    "CERTIFICATE_ID": "0e9682f6-3ffa-46fb-9671-b6349f5164d6",
     "TAGS": {"CostCenter": "NO PROGRAM / 000000"},
 }
 ```
@@ -150,7 +152,7 @@ from src.service_props import ServiceProps, ServiceSecret
 app_service_props = ServiceProps(
     container_name="app",
     container_port=443,
-    container_memory=1024,
+    container_memory_reservation=1024,
     container_location="ghcr.io/sage-bionetworks/app:v1.0",
     container_secrets=[
         ServiceSecret(
@@ -298,7 +300,7 @@ Deployment requires setting up an [AWS profile](https://docs.aws.amazon.com/cli/
 then executing the following command:
 
 ```console
-AWS_PROFILE=itsandbox-dev AWS_DEFAULT_REGION=us-east-1 ENV=dev cdk deploy --all
+env $(cat .env | xargs) AWS_PROFILE=itsandbox-dev AWS_DEFAULT_REGION=us-east-1 cdk deploy --all
 ```
 
 ## Force new deployment
