@@ -210,8 +210,7 @@ apex_stack.add_dependency(api_stack)
 bastion_props = BastionProps(
     key_name="model-ad-access",
     instance_type=ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
-    # TODO: create Model-AD bastion AMI similar to the one created for Agora in IT-4225
-    ami_id="ami-XXXXXXXXXXXXXXXXX",
+    ami_id="ami-074a6fac5773fe883",
     ami_region="us-east-1",
 )
 bastion_stack = BastionStack(
