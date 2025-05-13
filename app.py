@@ -208,7 +208,7 @@ apex_stack.add_dependency(app_stack)
 apex_stack.add_dependency(api_stack)
 
 bastion_props = BastionProps(
-    key_name="model-ad-access",
+    key_name="agora-access",
     instance_type=ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
     ami_id="ami-074a6fac5773fe883",
     ami_region="us-east-1",
