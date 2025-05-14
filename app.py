@@ -20,7 +20,7 @@ environment = environ.get("ENV")
 match environment:
     case "prod":
         environment_variables = {
-            "VPC_CIDR": "10.254.174.0/24",
+            "VPC_CIDR": "10.253.174.0/24",
             "FQDN": "modeladexplorer-prod.org",
             "CERTIFICATE_ID": "69b3ba97-b382-4648-8f94-a250b77b4994",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
@@ -28,7 +28,7 @@ match environment:
         }
     case "stage":
         environment_variables = {
-            "VPC_CIDR": "10.254.173.0/24",
+            "VPC_CIDR": "10.253.173.0/24",
             "FQDN": "modeladexplorer-stage.org",
             "CERTIFICATE_ID": "69b3ba97-b382-4648-8f94-a250b77b4994",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
@@ -36,7 +36,7 @@ match environment:
         }
     case "dev":
         environment_variables = {
-            "VPC_CIDR": "10.254.172.0/24",
+            "VPC_CIDR": "10.253.172.0/24",
             "FQDN": "modeladexplorer-dev.org",
             "CERTIFICATE_ID": "e8093404-7db1-4042-90d0-01eb5bde1ffc",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "dev"},
