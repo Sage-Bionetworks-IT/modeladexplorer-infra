@@ -343,3 +343,64 @@ The workflow for continuous integration:
 * CI deploys changes to the prod environment (prod.app.io) in the AWS prod account.
 
 ![CI deployment workflow](docs/ci-deployment-workflow.png)
+
+# Explorer Deployment Process
+
+## Overview
+
+The source code for the application lives in the [sage-monorepo](https://github.com/Sage-Bionetworks/sage-monorepo). When a new git tag is added in the monorepo, images are published to [GHCR](https://github.com/orgs/Sage-Bionetworks/packages?tab=packages&q=model-ad). These images are deployed with GHA to AWS Fargate using infrastructure code in this repo.
+
+### Dev
+
+| ![Tags on latest image published by sage-monorepo](docs/dev-package-tags.png) |
+| :---: |
+| Tags on latest image published by sage-monorepo |
+
+The development environment was created so that we can redeploy easily. Whenever code in the sage-monorepo is merged after PR was reviewed and all checks approved, a GHA job publishes new images tagged with `edge` and the commit SHA for each service in the stack that changed (e.g. see screenshot of [agora-app package](https://github.com/sage-bionetworks/sage-monorepo/pkgs/container/agora-app) above). The dev infra stack points at the `edge` image tag. So we can rerun the latest `deploy-dev` GHA job to redeploy the latest app code, by looking up the SHA of the most recent image using the `edge` tag and the GitHub API.
+
+So, the footer of the dev site will only show the image tag of the `model-ad-app` package, which in this case is the commit SHA.
+
+### Stage/Prod
+
+| ![git tag on image published by sage-monorepo](docs/stageprod-package-tags.png) |
+| :---: |
+| git tag on image published by sage-monorepo |
+
+Stage and prod environments point at a specific git tag that is manually added. As described below, when a new git tag is manually created for this app in the sage-monorepo, a GHA job publishes new images tagged with that git tag (see screenshot above). Then, the stage or prod environment variavles in the infra repo can be updated to point at that tag. When the changes are merged to the `stage` or `prod` branch, a GHA job will run the `deploy-stage` or `deploy-prod` job accordingly, which will deploy the images tagged with the git tag.
+
+## Dev Deployment
+
+1. When a PR that affects this app is merged to `main` in the sage-monorepo, wait for the [ci job](https://github.com/Sage-Bionetworks/sage-monorepo/actions/workflows/ci.yml) to finish building and publishing images for the affected projects to GHCR.
+2. Rerun the last [deploy-dev job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-infra/actions/workflows/deploy-dev.yaml) and wait for the job to successfully update dev deployment. Deployment can be monitored in AWS console in AWS ECS.
+3. Confirm that [dev site](https://modeladexplorer-dev.org/) shows changes from last merged PR.
+
+## Staging Deployment
+
+1. Review the list of existing tags [here](https://github.com/Sage-Bionetworks/sage-monorepo/tags). Identify the next `model-ad` tag. For example, if the last `model-ad` tag is `model-ad/v4.0.0-rc2`, then the next tag will be `model-ad/v4.0.0-rc3`. If the last `model-ad` tag doesn’t have a release candidate suffix (e.g. `model-ad/v4.0.0`), then the next tag will be the first release candidate of a new version (e.g. `model-ad/v4.0.1-rc1`). This follows the convention found at [semver.org](https://semver.org/).
+2. Create a new git tag in the sage-monorepo:
+   - Open devcontainer
+   - Checkout the main branch: `git checkout main`
+   - Fetch latest changes: `git fetch upstream`
+   - Rebase: `git rebase upstream/main`
+   - Tag the commit: `git tag model-ad/v4.0.0-rc3`
+   - Push the tag: `git push upstream tag model-ad/v4.0.0-rc3`
+3. Wait for sage-monorepo [release GHA job](https://github.com/Sage-Bionetworks/sage-monorepo/actions/workflows/release.yml) to successfully build, tag, and push images to GHCR.
+4. Create PR in this repo **to the dev branch** that sets `MODEL_AD_VERSION` for stage and prod environments to the new version number in `app.py`, since the images are only tagged with the version number (e.g. `4.0.0-rc3`) rather than the full tag name (e.g. `model-ad/v4.0.0-rc3` ).
+5. Merge PR. Wait for [deploy-dev job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-infra/actions/workflows/deploy-dev.yaml) to successfully update dev deployment. Deployment can be monitored in AWS console in AWS ECS.
+6. Create PR in this repo **to merge dev into the stage branch**.
+7. Merge PR. Wait for [deploy-stage GHA job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-v3/actions/workflows/deploy-stage.yaml) to successfully update staging deployment. Deployment can be monitored in AWS console in AWS ECS.
+8. Confirm that [staging site](http://modeladexplorer-stage.org/) shows new version’s tag in the app footer.
+
+## Production Deployment
+
+1. Go to the staging site and note the tag in the app footer. Identify the `model-ad` release tag. For example, if the staging site tag is `model-ad/v4.0.0-rc3`, then the release version will be `model-ad/release/v4.0.0`.
+2. Create a new git tag in the sage-monorepo:
+   - Open devcontainer
+   - Checkout the main branch: `git checkout main`
+   - Fetch latest changes: `git fetch upstream`
+   - Rebase: `git rebase upstream/main`
+   - Tag the commit: `git tag model-ad/release/v4.0.0`
+   - Push the tag: `git push upstream tag model-ad/release/v4.0.0`
+3. Create a PR in this repo **to merge the stage branch into the prod branch**.
+4. Merge PR. Wait for the [deploy-prod GHA job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-v3/actions/workflows/deploy-prod.yaml) to successfully update prod deployment. Deployment can be monitored in AWS console in AWS ECS.
+5. Confirm that [production site](http://modeladexplorer-prod.org/) shows the same tag in the app footer as the staging site.
