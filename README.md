@@ -83,7 +83,12 @@ Please install pre-commit, once installed the file validations will
 automatically run on every commit.  Alternatively you can manually
 execute the validations by running `pre-commit run --all-files`.
 
-Create a [GitHub classic personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) with `read:packages` access, then create a .env file using .env.example as a template. The token is used to authenticate with the GitHub API and access the packages endpoint to look up the latest image version for each service.
+Create a [GitHub classic personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) with `read:packages` access. The token is used to authenticate with the GitHub API and access the packages endpoint to look up the latest image version for each service. Create an `.env` file with the following variables:
+
+```
+GITHUB_TOKEN="your-token-here"
+ENV="dev"
+```
 
 Verify CDK to Cloudformation conversion by running [cdk synth]:
 
