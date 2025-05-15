@@ -51,13 +51,13 @@ match environment:
 stack_name_prefix = f"model-ad-{environment}"
 fully_qualified_domain_name = environment_variables["FQDN"]
 environment_tags = environment_variables["TAGS"]
-app_version = "edge"
+model_ad_version = "edge"
 docdb_master_username = "master"
 mongodb_port = 27017
 vpn_cidr = "10.1.0.0/16"
 
 # Get image versions
-if app_version == "edge":
+if model_ad_version == "edge":
     app_version = get_alternate_tag_for_edge_package_version(
         "Sage-Bionetworks", "model-ad-app"
     )
@@ -68,7 +68,7 @@ if app_version == "edge":
         "Sage-Bionetworks", "model-ad-apex"
     )
 else:
-    app_version = api_version = apex_version = app_version
+    app_version = api_version = apex_version = model_ad_version
 
 print(
     f"Using images: model-ad-app:{app_version}, model-ad-api:{api_version}, model-ad-apex:{apex_version}"
