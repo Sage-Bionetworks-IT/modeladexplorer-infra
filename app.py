@@ -25,7 +25,7 @@ match environment:
             "CERTIFICATE_ID": "69b3ba97-b382-4648-8f94-a250b77b4994",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "MODEL_AD_VERSION": "edge",
+            "EXPLORER_VERSION": "edge",
         }
     case "stage":
         environment_variables = {
@@ -34,7 +34,7 @@ match environment:
             "CERTIFICATE_ID": "69b3ba97-b382-4648-8f94-a250b77b4994",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "MODEL_AD_VERSION": "edge",
+            "EXPLORER_VERSION": "edge",
         }
     case "dev":
         environment_variables = {
@@ -43,7 +43,7 @@ match environment:
             "CERTIFICATE_ID": "e8093404-7db1-4042-90d0-01eb5bde1ffc",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "dev"},
             "AUTO_SCALE_CAPACITY": {"min": 1, "max": 2},
-            "MODEL_AD_VERSION": "edge",
+            "EXPLORER_VERSION": "edge",
         }
     case _:
         valid_envs_str = ",".join(VALID_ENVIRONMENTS)
@@ -54,13 +54,13 @@ match environment:
 stack_name_prefix = f"model-ad-{environment}"
 fully_qualified_domain_name = environment_variables["FQDN"]
 environment_tags = environment_variables["TAGS"]
-model_ad_version = environment_variables["MODEL_AD_VERSION"]
+explorer_version = environment_variables["EXPLORER_VERSION"]
 docdb_master_username = "master"
 mongodb_port = 27017
 vpn_cidr = "10.1.0.0/16"
 
 # Get image versions
-if model_ad_version == "edge":
+if explorer_version == "edge":
     app_version = get_alternate_tag_for_edge_package_version(
         "Sage-Bionetworks", "model-ad-app"
     )
@@ -71,7 +71,7 @@ if model_ad_version == "edge":
         "Sage-Bionetworks", "model-ad-apex"
     )
 else:
-    app_version = api_version = apex_version = model_ad_version
+    app_version = api_version = apex_version = explorer_version
 
 print(
     f"Using images: model-ad-app:{app_version}, model-ad-api:{api_version}, model-ad-apex:{apex_version}"
