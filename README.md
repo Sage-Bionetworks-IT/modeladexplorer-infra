@@ -377,7 +377,7 @@ Stage and prod environments point at a specific git tag that is manually added. 
 
 1. When a PR that affects this app is merged to `main` in the sage-monorepo, wait for the [ci job](https://github.com/Sage-Bionetworks/sage-monorepo/actions/workflows/ci.yml) to finish building and publishing images for the affected projects to GHCR.
 2. Rerun the last [deploy-dev job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-infra/actions/workflows/deploy-dev.yaml) and wait for the job to successfully update dev deployment. Deployment can be monitored in AWS console in AWS ECS.
-3. Confirm that [dev site](https://modeladexplorer-dev.org/) shows changes from last merged PR.
+3. Confirm that [dev site](https://dev.modeladexplorer.org/) shows changes from last merged PR.
 
 ## Staging Deployment
 
@@ -394,7 +394,7 @@ Stage and prod environments point at a specific git tag that is manually added. 
 5. Merge PR. Wait for [deploy-dev job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-infra/actions/workflows/deploy-dev.yaml) to successfully update dev deployment. Deployment can be monitored in AWS console in AWS ECS.
 6. Create PR in this repo **to merge dev into the stage branch**.
 7. Merge PR. Wait for [deploy-stage GHA job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-v3/actions/workflows/deploy-stage.yaml) to successfully update staging deployment. Deployment can be monitored in AWS console in AWS ECS.
-8. Confirm that [staging site](http://modeladexplorer-stage.org/) shows new version’s tag in the app footer.
+8. Confirm that [staging site](http://stage.modeladexplorer.org/) shows new version’s tag in the app footer.
 
 ## Production Deployment
 
@@ -408,4 +408,4 @@ Stage and prod environments point at a specific git tag that is manually added. 
    - Push the tag: `git push upstream tag model-ad/release/v4.0.0`
 3. Create a PR in this repo **to merge the stage branch into the prod branch**.
 4. Merge PR. Wait for the [deploy-prod GHA job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-v3/actions/workflows/deploy-prod.yaml) to successfully update prod deployment. Deployment can be monitored in AWS console in AWS ECS.
-5. Confirm that [production site](http://modeladexplorer-prod.org/) shows the same tag in the app footer as the staging site.
+5. Confirm that [production site](http://prod.modeladexplorer.org/) shows the same tag in the app footer as the staging site.
