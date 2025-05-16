@@ -21,8 +21,8 @@ match environment:
     case "prod":
         environment_variables = {
             "VPC_CIDR": "10.253.174.0/24",
-            "FQDN": "modeladexplorer-prod.org",
-            "CERTIFICATE_ID": "69b3ba97-b382-4648-8f94-a250b77b4994",
+            "FQDN": "prod.modeladexplorer.org",
+            "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
             "EXPLORER_VERSION": "edge",
@@ -30,8 +30,8 @@ match environment:
     case "stage":
         environment_variables = {
             "VPC_CIDR": "10.253.173.0/24",
-            "FQDN": "modeladexplorer-stage.org",
-            "CERTIFICATE_ID": "69b3ba97-b382-4648-8f94-a250b77b4994",
+            "FQDN": "stage.modeladexplorer.org",
+            "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
             "EXPLORER_VERSION": "edge",
@@ -39,8 +39,8 @@ match environment:
     case "dev":
         environment_variables = {
             "VPC_CIDR": "10.253.172.0/24",
-            "FQDN": "modeladexplorer-dev.org",
-            "CERTIFICATE_ID": "e8093404-7db1-4042-90d0-01eb5bde1ffc",
+            "FQDN": "dev.modeladexplorer.org",
+            "CERTIFICATE_ID": "b2e46121-3f53-4aba-af2e-bd724549c494",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "dev"},
             "AUTO_SCALE_CAPACITY": {"min": 1, "max": 2},
             "EXPLORER_VERSION": "edge",
