@@ -25,7 +25,7 @@ match environment:
             "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "EXPLORER_VERSION": "edge",
+            "GHCR_PACKAGE_VERSION": "edge",
         }
     case "stage":
         environment_variables = {
@@ -34,7 +34,7 @@ match environment:
             "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "EXPLORER_VERSION": "edge",
+            "GHCR_PACKAGE_VERSION": "edge",
         }
     case "dev":
         environment_variables = {
@@ -43,7 +43,7 @@ match environment:
             "CERTIFICATE_ID": "b2e46121-3f53-4aba-af2e-bd724549c494",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "dev"},
             "AUTO_SCALE_CAPACITY": {"min": 1, "max": 2},
-            "EXPLORER_VERSION": "edge",
+            "GHCR_PACKAGE_VERSION": "edge",
         }
     case _:
         valid_envs_str = ",".join(VALID_ENVIRONMENTS)
@@ -54,13 +54,13 @@ match environment:
 stack_name_prefix = f"model-ad-{environment}"
 fully_qualified_domain_name = environment_variables["FQDN"]
 environment_tags = environment_variables["TAGS"]
-explorer_version = environment_variables["EXPLORER_VERSION"]
+ghcr_package_version = environment_variables["GHCR_PACKAGE_VERSION"]
 docdb_master_username = "master"
 mongodb_port = 27017
 vpn_cidr = "10.1.0.0/16"
 
 # Get image versions
-if explorer_version == "edge":
+if ghcr_package_version == "edge":
     app_version = get_alternate_tag_for_edge_package_version(
         "Sage-Bionetworks", "model-ad-app"
     )
@@ -71,7 +71,7 @@ if explorer_version == "edge":
         "Sage-Bionetworks", "model-ad-apex"
     )
 else:
-    app_version = api_version = apex_version = explorer_version
+    app_version = api_version = apex_version = ghcr_package_version
 
 print(
     f"Using images: model-ad-app:{app_version}, model-ad-api:{api_version}, model-ad-apex:{apex_version}"
