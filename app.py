@@ -167,7 +167,7 @@ app_props = ServiceProps(
     container_env_vars={
         "APP_VERSION": f"{app_version}",
         "CSR_API_URL": f"https://{fully_qualified_domain_name}/api/v1",
-        "SSR_API_URL": "http://model-ad-api:3333/api/v1",
+        "SSR_API_URL": "http://model-ad-api:3333/v1",
         "TAG_NAME": f"model-ad/v{app_version}",
         "GOOGLE_TAG_MANAGER_ID": "GTM-K5BLKJH5",
     },
