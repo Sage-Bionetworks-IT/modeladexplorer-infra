@@ -25,7 +25,7 @@ match environment:
             "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "edge",
+            "GHCR_PACKAGE_VERSION": "0.1.0-rc1",
         }
     case "stage":
         environment_variables = {
@@ -34,7 +34,7 @@ match environment:
             "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "edge",
+            "GHCR_PACKAGE_VERSION": "0.1.0-rc1",
         }
     case "dev":
         environment_variables = {
@@ -167,7 +167,7 @@ app_props = ServiceProps(
     container_env_vars={
         "APP_VERSION": f"{app_version}",
         "CSR_API_URL": f"https://{fully_qualified_domain_name}/api/v1",
-        "SSR_API_URL": "http://model-ad-api:3333/api/v1",
+        "SSR_API_URL": "http://model-ad-api:3333/v1",
         "TAG_NAME": f"model-ad/v{app_version}",
         "GOOGLE_TAG_MANAGER_ID": "GTM-K5BLKJH5",
     },
