@@ -355,6 +355,12 @@ The workflow for continuous integration:
 
 The source code for the application lives in the [sage-monorepo](https://github.com/Sage-Bionetworks/sage-monorepo). When a new git tag is added in the monorepo, images are published to [GHCR](https://github.com/orgs/Sage-Bionetworks/packages?tab=packages&q=model-ad). These images are deployed with GHA to AWS Fargate using infrastructure code in this repo.
 
+> [!NOTE]
+> There may be a delay before the website updates after any deployment jobs since there is a non-trivial cutover delay (a few minutes).
+
+> [!IMPORTANT]
+> You will want to deploy to [model-ad-data-manager](https://github.com/Sage-Bionetworks/model-ad-data-manager) if this app release requires a data release
+
 ### Dev
 
 | ![Tags on latest image published by sage-monorepo](docs/dev-package-tags.png) |
@@ -393,7 +399,7 @@ Stage and prod environments point at a specific git tag that is manually added. 
 4. Create a new branch and edit `app.py` to set `GHCR_PACKAGE_VERSION` to the new version number (e.g. `4.0.0-rc3`) and not the tag (e.g. `model-ad/v4.0.0-rc3`) in 2 places in the code for `stage` and `prod` configurations.  Create PR in this [repo](https://github.com/Sage-Bionetworks-IT/modeladexplorer-infra) **to the dev branch**.
 5. Merge PR. Wait for [deploy-dev job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-infra/actions/workflows/deploy-dev.yaml) to successfully update dev deployment. Deployment can be monitored in AWS console in AWS ECS.
 6. Create PR in this repo **to merge dev into the stage branch**.
-7. Merge PR. Wait for [deploy-stage GHA job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-v3/actions/workflows/deploy-stage.yaml) to successfully update staging deployment. Deployment can be monitored in AWS console in AWS ECS.
+7. Merge PR. Wait for [deploy-stage GHA job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-v3/actions/workflows/deploy-stage.yaml) to successfully update staging deployment. Deployment can be monitored in AWS console in AWS ECS (see [NOTE on cutover delay](#overview) above).
 8. Confirm that [staging site](http://stage.modeladexplorer.org/) shows new version’s tag in the app footer.
 
 ## Production Deployment
@@ -409,5 +415,5 @@ Stage and prod environments point at a specific git tag that is manually added. 
    - Confirm that the new tag is on the same commit as the previous tag by reviewing the git log: `git log --oneline`
    - Push the tag: `git push upstream tag model-ad/release/v4.0.0`
 3. Create a PR in this repo **to merge the stage branch into the prod branch**. You can use this [url](https://github.com/Sage-Bionetworks-IT/modeladexplorer-infra/compare/prod...stage).
-4. Merge PR. Wait for the [deploy-prod GHA job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-v3/actions/workflows/deploy-prod.yaml) to successfully update prod deployment. Deployment can be monitored in AWS console in AWS ECS.
+4. Merge PR. Wait for the [deploy-prod GHA job](https://github.com/Sage-Bionetworks-IT/modeladexplorer-infra/actions/workflows/deploy-prod.yaml) to successfully update prod deployment. Deployment can be monitored in AWS console in AWS ECS.
 5. Confirm that [production site](http://prod.modeladexplorer.org/) shows the same tag in the app footer as the staging site.
