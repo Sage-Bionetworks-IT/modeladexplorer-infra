@@ -4,6 +4,7 @@ from typing import TypedDict, List, Literal
 
 # https://docs.github.com/en/rest/packages/packages?apiVersion=2022-11-28#list-package-versions-for-a-package-owned-by-an-organization
 
+
 class ContainerMetadata(TypedDict):
     tags: List[str]
 
