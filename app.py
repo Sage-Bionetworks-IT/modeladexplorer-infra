@@ -204,7 +204,6 @@ app_props = ServiceProps(
         "CSR_API_URL": f"https://{fully_qualified_domain_name}/api/v1",
         # TODO: update this port when model-ad-api is removed from this stack
         "SSR_API_URL": "http://model-ad-api:3333/v1",
-        "TAG_NAME": f"{TAG_PREFIX}{app_version}",
         "GOOGLE_TAG_MANAGER_ID": "GTM-K5BLKJH5",
     },
     auto_scale_min_capacity=environment_variables["AUTO_SCALE_CAPACITY"]["min"],
