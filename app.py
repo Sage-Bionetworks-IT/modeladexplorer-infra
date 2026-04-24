@@ -206,6 +206,7 @@ app_props = ServiceProps(
         "SSR_API_URL": "http://model-ad-api:3333/v1",
         "GOOGLE_TAG_MANAGER_ID": "GTM-K5BLKJH5",
         "SENTRY_ENVIRONMENT": environment,
+        "SENTRY_RELEASE": f"model-ad@{ghcr_package_version}+{short_commit_sha}",
     },
     container_secrets=[
         ServiceSecret(
