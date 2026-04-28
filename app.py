@@ -25,7 +25,7 @@ match environment:
             "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "0.9.0-rc1",
+            "GHCR_PACKAGE_VERSION": "1.0.0-rc1",
         }
     case "stage":
         environment_variables = {
@@ -34,7 +34,7 @@ match environment:
             "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "0.9.0-rc1",
+            "GHCR_PACKAGE_VERSION": "1.0.0-rc1",
         }
     case "dev":
         environment_variables = {
