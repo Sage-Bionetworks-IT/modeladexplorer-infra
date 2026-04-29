@@ -4,7 +4,7 @@ import aws_cdk as cdk
 from aws_cdk import aws_ec2 as ec2
 
 from src.ecs_stack import EcsStack
-from src.helpers.get_package_version import get_alternate_tag_for_edge_package_version
+from src.helpers.github_helpers import get_image_version, get_short_commit_sha
 from src.load_balancer_stack import LoadBalancerStack
 from src.network_stack import NetworkStack
 from src.service_props import ServiceProps, ServiceSecret
@@ -25,7 +25,7 @@ match environment:
             "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "0.9.0-rc1",
+            "GHCR_PACKAGE_VERSION": "1.0.0",
         }
     case "stage":
         environment_variables = {
@@ -34,7 +34,7 @@ match environment:
             "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "0.9.0-rc1",
+            "GHCR_PACKAGE_VERSION": "1.0.0",
         }
     case "dev":
         environment_variables = {
@@ -51,6 +51,7 @@ match environment:
             f"Must set environment variable `ENV` to one of {valid_envs_str}. Currently set to {environment}."
         )
 
+TAG_PREFIX = "model-ad/v"
 stack_name_prefix = f"model-ad-{environment}"
 fully_qualified_domain_name = environment_variables["FQDN"]
 environment_tags = environment_variables["TAGS"]
@@ -59,22 +60,15 @@ docdb_master_username = "master"
 mongodb_port = 27017
 vpn_cidr = "10.1.0.0/16"
 
-# Get image versions
-if ghcr_package_version == "edge":
-    app_version = get_alternate_tag_for_edge_package_version(
-        "Sage-Bionetworks", "model-ad-app"
-    )
-    api_version = get_alternate_tag_for_edge_package_version(
-        "Sage-Bionetworks", "model-ad-api"
-    )
-    api_next_version = get_alternate_tag_for_edge_package_version(
-        "Sage-Bionetworks", "model-ad-api-next"
-    )
-    apex_version = get_alternate_tag_for_edge_package_version(
-        "Sage-Bionetworks", "model-ad-apex"
-    )
-else:
-    app_version = api_version = api_next_version = apex_version = ghcr_package_version
+# Resolve image tags for each service
+app_version = get_image_version("model-ad-app", ghcr_package_version)
+api_version = get_image_version("model-ad-api", ghcr_package_version)
+api_next_version = get_image_version("model-ad-api-next", ghcr_package_version)
+apex_version = get_image_version("model-ad-apex", ghcr_package_version)
+
+short_commit_sha = get_short_commit_sha(
+    "sage-monorepo", app_version, ghcr_package_version, tag_prefix=TAG_PREFIX
+)
 
 print(
     f"Using images: model-ad-app:{app_version}, model-ad-api:{api_version}, "
@@ -205,13 +199,21 @@ app_props = ServiceProps(
     container_port=4200,
     container_memory_reservation=1024,
     container_env_vars={
-        "APP_VERSION": f"{app_version}",
+        "APP_VERSION": app_version,
+        "COMMIT_SHA": short_commit_sha,
         "CSR_API_URL": f"https://{fully_qualified_domain_name}/api/v1",
         # TODO: update this port when model-ad-api is removed from this stack
         "SSR_API_URL": "http://model-ad-api:3333/v1",
-        "TAG_NAME": f"model-ad/v{app_version}",
         "GOOGLE_TAG_MANAGER_ID": "GTM-K5BLKJH5",
+        "SENTRY_ENVIRONMENT": environment,
+        "SENTRY_RELEASE": f"model-ad@{ghcr_package_version}+{short_commit_sha}",
     },
+    container_secrets=[
+        ServiceSecret(
+            secret_name="model-ad-sentry-dsn",
+            environment_key="SENTRY_DSN",
+        )
+    ],
     auto_scale_min_capacity=environment_variables["AUTO_SCALE_CAPACITY"]["min"],
     auto_scale_max_capacity=environment_variables["AUTO_SCALE_CAPACITY"]["max"],
 )
