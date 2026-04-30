@@ -6,21 +6,21 @@ default_language_version:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
     hooks:
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/PyCQA/flake8
-    rev: 7.3.0
+    rev: d93590f5be797aabb60e3b09f2f52dddb02f349f # 7.3.0
     hooks:
       - id: flake8
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.38.0
+    rev: cba56bcde1fdd01c1deb3f945e69764c291a6530 # v1.38.0
     hooks:
       - id: yamllint
   - repo: https://github.com/awslabs/cfn-python-lint
-    rev: v1.48.1
+    rev: 49c9627a7ca6d18ddbe0b2d4cd39deeee6160c74 # v1.48.1
     hooks:
       - id: cfn-python-lint
         args:
@@ -35,11 +35,15 @@ repos:
             ^.pre-commit-config.yaml
           )
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.3.1
+    rev: fa505ab9c3e0fedafe1709fd7ac2b5f8996c670d # 26.3.1
     hooks:
       - id: black
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 6a280ba12b7901e47757c868c8c13c6a624c9ecb # 0.11.7
+    hooks:
+      - id: uv-lock
   - repo: https://github.com/sirosen/check-jsonschema
-    rev: 0.37.1
+    rev: ed81924a8b1cecdaa570b072528fa80c9c4d6ccd # 0.37.1
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
