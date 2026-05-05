@@ -20,7 +20,7 @@ repos:
     hooks:
       - id: yamllint
   - repo: https://github.com/awslabs/cfn-python-lint
-    rev: 49c9627a7ca6d18ddbe0b2d4cd39deeee6160c74 # v1.48.1
+    rev: 9823e89806e500c98f3ddb6efbe454a840b27136 # v1.50.1
     hooks:
       - id: cfn-python-lint
         args:
@@ -43,7 +43,7 @@ repos:
     hooks:
       - id: uv-lock
   - repo: https://github.com/sirosen/check-jsonschema
-    rev: ed81924a8b1cecdaa570b072528fa80c9c4d6ccd # 0.37.1
+    rev: 943377262562a12b57292fc98fabd7dbf81451fe # 0.37.2
     hooks:
       - id: check-github-workflows
       - id: check-github-actions
