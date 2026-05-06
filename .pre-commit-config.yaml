@@ -1,5 +1,6 @@
 ci:
   autoupdate_schedule: monthly
+  skip: [uv-audit]
 
 default_language_version:
   python: python3
@@ -42,6 +43,7 @@ repos:
     rev: 6a280ba12b7901e47757c868c8c13c6a624c9ecb # 0.11.7
     hooks:
       - id: uv-lock
+      - id: uv-audit
   - repo: https://github.com/sirosen/check-jsonschema
     rev: 943377262562a12b57292fc98fabd7dbf81451fe # 0.37.2
     hooks:
