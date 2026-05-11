@@ -1,5 +1,7 @@
 ci:
   autoupdate_schedule: monthly
+  # uv-audit queries api.osv.dev for CVEs. pre-commit.ci blocks outbound
+  # network during hook execution, so the GHA audit job in test.yaml runs it instead.
   skip: [uv-audit]
 
 default_language_version:
@@ -43,6 +45,9 @@ repos:
     rev: 6a280ba12b7901e47757c868c8c13c6a624c9ecb # 0.11.7
     hooks:
       - id: uv-lock
+      # Runs locally when uv.lock, pyproject.toml, or uv.toml are part of
+      # the commit, and on every PR via the GHA audit job in test.yaml.
+      # Skipped on pre-commit.ci (see ci.skip comment above).
       - id: uv-audit
   - repo: https://github.com/sirosen/check-jsonschema
     rev: 943377262562a12b57292fc98fabd7dbf81451fe # 0.37.2
