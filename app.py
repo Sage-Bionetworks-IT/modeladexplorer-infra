@@ -89,20 +89,23 @@ network_stack = NetworkStack(
     vpc_cidr=environment_variables["VPC_CIDR"],
 )
 
-docdb_props = DocdbProps(
+# DocumentDB 8.0 cluster
+docdb_v8_props = DocdbProps(
     instance_type=ec2.InstanceType.of(
         ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE
     ),
     master_username=docdb_master_username,
     port=mongodb_port,
+    family="docdb8.0",
+    engine_version="8.0.0",
 )
-docdb_stack = DocdbStack(
+docdb_v8_stack = DocdbStack(
     scope=cdk_app,
-    construct_id=f"{stack_name_prefix}-docdb",
+    construct_id=f"{stack_name_prefix}-docdb-v8",
     vpc=network_stack.vpc,
-    props=docdb_props,
+    props=docdb_v8_props,
 )
-docdb_stack.cluster.connections.allow_from(
+docdb_v8_stack.cluster.connections.allow_from(
     ec2.Peer.ipv4(vpn_cidr), ec2.Port.all_traffic(), "Allow all VPN traffic"
 )
 
@@ -133,11 +136,11 @@ api_props = ServiceProps(
         "MONGODB_PORT": f"{mongodb_port}",
         "MONGODB_NAME": "model-ad",
         "MONGODB_USER": docdb_master_username,
-        "MONGODB_HOST": docdb_stack.cluster.cluster_endpoint.hostname,
+        "MONGODB_HOST": docdb_v8_stack.cluster.cluster_endpoint.hostname,
     },
     container_secrets=[
         ServiceSecret(
-            secret_name=docdb_stack.master_password_secret.secret_name,
+            secret_name=docdb_v8_stack.master_password_secret.secret_name,
             environment_key="MONGODB_PASS",
         )
     ],
@@ -151,9 +154,9 @@ api_stack = ServiceStack(
     cluster=ecs_stack.cluster,
     props=api_props,
 )
-api_stack.add_dependency(docdb_stack)
+api_stack.add_dependency(docdb_v8_stack)
 api_stack.service.connections.allow_to_default_port(
-    docdb_stack.cluster,
+    docdb_v8_stack.cluster,
     "Allow API container to connect to DocumentDB cluster",
 )
 
@@ -164,7 +167,7 @@ api_next_props = ServiceProps(
     container_memory_reservation=2048,
     container_env_vars={
         "SERVER_PORT": "3334",
-        "SPRING_DATA_MONGODB_HOST": docdb_stack.cluster.cluster_endpoint.hostname,
+        "SPRING_DATA_MONGODB_HOST": docdb_v8_stack.cluster.cluster_endpoint.hostname,
         "SPRING_DATA_MONGODB_PORT": f"{mongodb_port}",
         "SPRING_DATA_MONGODB_DATABASE": "model-ad",
         "SPRING_DATA_MONGODB_USERNAME": docdb_master_username,
@@ -173,7 +176,7 @@ api_next_props = ServiceProps(
     },
     container_secrets=[
         ServiceSecret(
-            secret_name=docdb_stack.master_password_secret.secret_name,
+            secret_name=docdb_v8_stack.master_password_secret.secret_name,
             environment_key="SPRING_DATA_MONGODB_PASSWORD",
         )
     ],
@@ -187,9 +190,9 @@ api_next_stack = ServiceStack(
     cluster=ecs_stack.cluster,
     props=api_next_props,
 )
-api_next_stack.add_dependency(docdb_stack)
+api_next_stack.add_dependency(docdb_v8_stack)
 api_next_stack.service.connections.allow_to_default_port(
-    docdb_stack.cluster,
+    docdb_v8_stack.cluster,
     "Allow API Next container to connect to DocumentDB cluster",
 )
 
@@ -270,10 +273,10 @@ bastion_stack = BastionStack(
     props=bastion_props,
 )
 bastion_stack.instance.connections.allow_to(
-    docdb_stack.cluster,
+    docdb_v8_stack.cluster,
     ec2.Port.tcp_range(mongodb_port, 27030),
     "Allow bastion host to connect to DocumentDB cluster",
 )
-bastion_stack.add_dependency(docdb_stack)
+bastion_stack.add_dependency(docdb_v8_stack)
 
 cdk_app.synth()
