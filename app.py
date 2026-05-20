@@ -22,7 +22,7 @@ match environment:
         environment_variables = {
             "VPC_CIDR": "10.253.174.0/24",
             "FQDN": "prod.modeladexplorer.org",
-            "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
+            "CERTIFICATE_ID": "0983d5d7-6480-4292-b4bc-947712f248b0",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
             "GHCR_PACKAGE_VERSION": "1.0.0",
@@ -31,7 +31,7 @@ match environment:
         environment_variables = {
             "VPC_CIDR": "10.253.173.0/24",
             "FQDN": "stage.modeladexplorer.org",
-            "CERTIFICATE_ID": "dac041fd-e947-4684-a910-fa343adeac33",
+            "CERTIFICATE_ID": "0983d5d7-6480-4292-b4bc-947712f248b0",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
             "GHCR_PACKAGE_VERSION": "1.0.0",
