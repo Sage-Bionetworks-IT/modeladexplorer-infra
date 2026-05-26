@@ -21,11 +21,12 @@ match environment:
     case "prod":
         environment_variables = {
             "VPC_CIDR": "10.253.174.0/24",
-            "FQDN": "prod.modeladexplorer.org",
+            "FQDN": "modeladexplorer.org",
             "CERTIFICATE_ID": "0983d5d7-6480-4292-b4bc-947712f248b0",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
             "GHCR_PACKAGE_VERSION": "1.0.0",
+            "REDIRECT_FROM_HOSTNAME": "prod.modeladexplorer.org",
         }
     case "stage":
         environment_variables = {
@@ -35,6 +36,7 @@ match environment:
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
             "GHCR_PACKAGE_VERSION": "1.0.0",
+            "REDIRECT_FROM_HOSTNAME": None,
         }
     case "dev":
         environment_variables = {
@@ -44,6 +46,7 @@ match environment:
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "dev"},
             "AUTO_SCALE_CAPACITY": {"min": 1, "max": 2},
             "GHCR_PACKAGE_VERSION": "edge",
+            "REDIRECT_FROM_HOSTNAME": None,
         }
     case _:
         valid_envs_str = ",".join(VALID_ENVIRONMENTS)
@@ -56,6 +59,8 @@ stack_name_prefix = f"model-ad-{environment}"
 fully_qualified_domain_name = environment_variables["FQDN"]
 environment_tags = environment_variables["TAGS"]
 ghcr_package_version = environment_variables["GHCR_PACKAGE_VERSION"]
+redirect_from_hostname = environment_variables["REDIRECT_FROM_HOSTNAME"]
+redirect_to_hostname = fully_qualified_domain_name if redirect_from_hostname else None
 docdb_master_username = "master"
 mongodb_port = 27017
 vpn_cidr = "10.1.0.0/16"
@@ -252,6 +257,8 @@ apex_stack = LoadBalancedServiceStack(
     load_balancer=load_balancer_stack.alb,
     certificate_id=environment_variables["CERTIFICATE_ID"],
     health_check_path="/health",
+    redirect_from_hostname=redirect_from_hostname,
+    redirect_to_hostname=redirect_to_hostname,
 )
 apex_stack.add_dependency(app_stack)
 apex_stack.add_dependency(api_stack)
