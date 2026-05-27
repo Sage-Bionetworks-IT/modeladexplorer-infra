@@ -209,6 +209,7 @@ app_props = ServiceProps(
         "CSR_API_URL": f"https://{fully_qualified_domain_name}/api/v1",
         # TODO: update this port when model-ad-api is removed from this stack
         "SSR_API_URL": "http://model-ad-api:3333/v1",
+        "ENVIRONMENT": environment,
         "GOOGLE_TAG_MANAGER_ID": "GTM-K5BLKJH5",
         "SENTRY_ENVIRONMENT": environment,
         "SENTRY_RELEASE": f"model-ad@{ghcr_package_version}+{short_commit_sha}",
