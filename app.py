@@ -27,6 +27,8 @@ match environment:
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
             "GHCR_PACKAGE_VERSION": "1.0.0",
             "REDIRECT_FROM_HOSTNAME": "prod.modeladexplorer.org",
+            "GTM_ENABLED": "true",
+            "GTM_CONTAINER_ID": "GTM-K5BLKJH5",
         }
     case "stage":
         environment_variables = {
@@ -37,6 +39,8 @@ match environment:
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
             "GHCR_PACKAGE_VERSION": "1.0.0",
             "REDIRECT_FROM_HOSTNAME": None,
+            "GTM_ENABLED": "false",
+            "GTM_CONTAINER_ID": "",
         }
     case "dev":
         environment_variables = {
@@ -47,6 +51,8 @@ match environment:
             "AUTO_SCALE_CAPACITY": {"min": 1, "max": 2},
             "GHCR_PACKAGE_VERSION": "edge",
             "REDIRECT_FROM_HOSTNAME": None,
+            "GTM_ENABLED": "false",
+            "GTM_CONTAINER_ID": "",
         }
     case _:
         valid_envs_str = ",".join(VALID_ENVIRONMENTS)
@@ -210,7 +216,8 @@ app_props = ServiceProps(
         # TODO: update this port when model-ad-api is removed from this stack
         "SSR_API_URL": "http://model-ad-api:3333/v1",
         "ENVIRONMENT": environment,
-        "GOOGLE_TAG_MANAGER_ID": "GTM-K5BLKJH5",
+        "GOOGLE_TAG_MANAGER_ENABLED": environment_variables["GTM_ENABLED"],
+        "GOOGLE_TAG_MANAGER_ID": environment_variables["GTM_CONTAINER_ID"],
         "SENTRY_ENVIRONMENT": environment,
         "SENTRY_RELEASE": f"model-ad@{ghcr_package_version}+{short_commit_sha}",
     },
