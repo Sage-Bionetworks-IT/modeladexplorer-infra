@@ -220,6 +220,8 @@ class LoadBalancedServiceStack(ServiceStack):
         certificate_id: str,
         health_check_path: str = "/",
         health_check_interval: int = 1,  # max is 5
+        redirect_from_hostname: str | None = None,
+        redirect_to_hostname: str | None = None,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, vpc, cluster, props, **kwargs)
@@ -256,6 +258,26 @@ class LoadBalancedServiceStack(ServiceStack):
                 path=health_check_path, interval=duration.minutes(health_check_interval)
             ),
         )
+
+        if bool(redirect_from_hostname) != bool(redirect_to_hostname):
+            raise ValueError(
+                "redirect_from_hostname and redirect_to_hostname must both be set or both be None"
+            )
+
+        if redirect_from_hostname and redirect_to_hostname:
+            https_listener.add_action(
+                "SubdomainRedirect",
+                priority=1,  # unique per listener; increment if more rules are added
+                conditions=[
+                    elbv2.ListenerCondition.host_headers([redirect_from_hostname])
+                ],
+                action=elbv2.ListenerAction.redirect(
+                    host=redirect_to_hostname,
+                    port=str(ALB_HTTPS_LISTENER_PORT),
+                    protocol=elbv2.ApplicationProtocol.HTTPS.value,
+                    permanent=True,
+                ),
+            )
 
         # -------------------------------
         # redirect http to https
