@@ -25,8 +25,10 @@ match environment:
             "CERTIFICATE_ID": "0983d5d7-6480-4292-b4bc-947712f248b0",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "1.0.0",
+            "GHCR_PACKAGE_VERSION": "1.0.1-rc1",
             "REDIRECT_FROM_HOSTNAME": "prod.modeladexplorer.org",
+            "GTM_ENABLED": "true",
+            "GTM_CONTAINER_ID": "GTM-K5BLKJH5",
         }
     case "stage":
         environment_variables = {
@@ -35,8 +37,10 @@ match environment:
             "CERTIFICATE_ID": "0983d5d7-6480-4292-b4bc-947712f248b0",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "1.0.0",
+            "GHCR_PACKAGE_VERSION": "1.0.1-rc1",
             "REDIRECT_FROM_HOSTNAME": None,
+            "GTM_ENABLED": "false",
+            "GTM_CONTAINER_ID": "",
         }
     case "dev":
         environment_variables = {
@@ -47,6 +51,8 @@ match environment:
             "AUTO_SCALE_CAPACITY": {"min": 1, "max": 2},
             "GHCR_PACKAGE_VERSION": "edge",
             "REDIRECT_FROM_HOSTNAME": None,
+            "GTM_ENABLED": "false",
+            "GTM_CONTAINER_ID": "",
         }
     case _:
         valid_envs_str = ",".join(VALID_ENVIRONMENTS)
@@ -209,7 +215,9 @@ app_props = ServiceProps(
         "CSR_API_URL": f"https://{fully_qualified_domain_name}/api/v1",
         # TODO: update this port when model-ad-api is removed from this stack
         "SSR_API_URL": "http://model-ad-api:3333/v1",
-        "GOOGLE_TAG_MANAGER_ID": "GTM-K5BLKJH5",
+        "ENVIRONMENT": environment,
+        "GOOGLE_TAG_MANAGER_ENABLED": environment_variables["GTM_ENABLED"],
+        "GOOGLE_TAG_MANAGER_ID": environment_variables["GTM_CONTAINER_ID"],
         "SENTRY_ENVIRONMENT": environment,
         "SENTRY_RELEASE": f"model-ad@{ghcr_package_version}+{short_commit_sha}",
     },
