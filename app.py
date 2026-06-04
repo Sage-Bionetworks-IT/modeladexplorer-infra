@@ -89,7 +89,6 @@ network_stack = NetworkStack(
     vpc_cidr=environment_variables["VPC_CIDR"],
 )
 
-# DocumentDB 8.0 cluster
 docdb_props = DocdbProps(
     instance_type=ec2.InstanceType.of(
         ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE
