@@ -106,10 +106,12 @@ docdb_props = DocdbProps(
     ),
     master_username=docdb_master_username,
     port=mongodb_port,
+    family="docdb8.0",
+    engine_version="8.0.0",
 )
 docdb_stack = DocdbStack(
     scope=cdk_app,
-    construct_id=f"{stack_name_prefix}-docdb",
+    construct_id=f"{stack_name_prefix}-docdb-v8",
     vpc=network_stack.vpc,
     props=docdb_props,
 )
