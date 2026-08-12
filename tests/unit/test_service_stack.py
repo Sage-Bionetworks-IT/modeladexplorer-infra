@@ -84,6 +84,43 @@ def test_service_stack_created():
     )
 
 
+def test_service_stack_builds_container_from_local_path(tmp_path):
+    (tmp_path / "Dockerfile").write_text("FROM scratch\n")
+
+    cdk_app = cdk.App()
+    network_stack = NetworkStack(cdk_app, "NetworkStack", vpc_cidr="10.254.192.0/24")
+    ecs_stack = EcsStack(
+        cdk_app, "EcsStack", vpc=network_stack.vpc, namespace="dev.app.io"
+    )
+
+    app_props = ServiceProps(
+        container_name="app",
+        container_location=f"path://{tmp_path}",
+        container_port=8010,
+        container_memory_reservation=200,
+    )
+    app_stack = ServiceStack(
+        scope=cdk_app,
+        construct_id="app",
+        vpc=network_stack.vpc,
+        cluster=ecs_stack.cluster,
+        props=app_props,
+    )
+
+    # A container built from source is published as a CDK ECR asset, so the image
+    # is a CloudFormation intrinsic rather than the registry string it would be
+    # if the location were treated as a registry reference.
+    template = assertions.Template.from_stack(app_stack).to_json()
+    task_definitions = [
+        resource
+        for resource in template["Resources"].values()
+        if resource["Type"] == "AWS::ECS::TaskDefinition"
+    ]
+    image = task_definitions[0]["Properties"]["ContainerDefinitions"][0]["Image"]
+    assert isinstance(image, dict), f"expected an ECR asset reference, got {image!r}"
+    assert "container-assets" in image["Fn::Sub"]
+
+
 def test_load_balanced_service_stack_raises_when_only_redirect_from_set():
     with pytest.raises(ValueError):
         _make_load_balanced_stack(redirect_from="prod.modeladexplorer.org")
