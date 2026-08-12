@@ -52,6 +52,10 @@ class ServiceProps:
     container_location:
       supports "path://" for building container from local (i.e. path://docker/MyContainer)
       supports docker registry references (i.e. ghcr.io/sage-bionetworks/app:latest)
+      the "path://" prefix is stripped, so `container_location_is_path` records whether
+      it was present
+    container_location_is_path: True when container_location was a "path://" reference
+      and the container should be built from local source
     container_port: the container application port
     container_memory_reservation: the soft limit of memory to reserve from the task memory for the container application
     container_env_vars: a json dictionary of environment variables to pass into the container
@@ -81,7 +85,10 @@ class ServiceProps:
         self.container_name = container_name
         self.container_port = container_port
         self.container_memory_reservation = container_memory_reservation
-        if CONTAINER_LOCATION_PATH_ID in container_location:
+        self.container_location_is_path = container_location.startswith(
+            CONTAINER_LOCATION_PATH_ID
+        )
+        if self.container_location_is_path:
             container_location = container_location.removeprefix(
                 CONTAINER_LOCATION_PATH_ID
             )

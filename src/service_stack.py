@@ -90,10 +90,10 @@ class ServiceStack(cdk.Stack):
             execution_role=execution_role,
         )
 
-        image = ecs.ContainerImage.from_registry(props.container_location)
-        if "path://" in props.container_location:  # build container from source
-            location = props.container_location.removeprefix("path://")
-            image = ecs.ContainerImage.from_asset(location)
+        if props.container_location_is_path:  # build container from source
+            image = ecs.ContainerImage.from_asset(props.container_location)
+        else:
+            image = ecs.ContainerImage.from_registry(props.container_location)
 
         def _get_secret(scope: Construct, id: str, name: str) -> sm.Secret:
             """Get a secret from the AWS secrets manager"""
