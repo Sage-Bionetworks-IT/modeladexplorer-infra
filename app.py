@@ -25,7 +25,7 @@ match environment:
             "CERTIFICATE_ID": "0983d5d7-6480-4292-b4bc-947712f248b0",
             "TAGS": {"CostCenter": "Model AD-UCI / 123300", "Environment": "prod"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "1.0.1-rc1",
+            "GHCR_PACKAGE_VERSION": "1.1.0-rc1",
             "REDIRECT_FROM_HOSTNAME": "prod.modeladexplorer.org",
             "GTM_ENABLED": "true",
             "GTM_CONTAINER_ID": "GTM-K5BLKJH5",
@@ -37,7 +37,7 @@ match environment:
             "CERTIFICATE_ID": "0983d5d7-6480-4292-b4bc-947712f248b0",
             "TAGS": {"CostCenter": "Model AD-IU / 123200", "Environment": "stage"},
             "AUTO_SCALE_CAPACITY": {"min": 2, "max": 4},
-            "GHCR_PACKAGE_VERSION": "1.0.1-rc1",
+            "GHCR_PACKAGE_VERSION": "1.1.0-rc1",
             "REDIRECT_FROM_HOSTNAME": None,
             "GTM_ENABLED": "false",
             "GTM_CONTAINER_ID": "",
@@ -106,10 +106,12 @@ docdb_props = DocdbProps(
     ),
     master_username=docdb_master_username,
     port=mongodb_port,
+    family="docdb8.0",
+    engine_version="8.0.0",
 )
 docdb_stack = DocdbStack(
     scope=cdk_app,
-    construct_id=f"{stack_name_prefix}-docdb",
+    construct_id=f"{stack_name_prefix}-docdb-v8",
     vpc=network_stack.vpc,
     props=docdb_props,
 )
