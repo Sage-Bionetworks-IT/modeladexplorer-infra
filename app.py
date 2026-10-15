@@ -276,7 +276,9 @@ apex_stack.add_dependency(api_next_stack)
 
 bastion_props = BastionProps(
     key_name="agora-access",
-    instance_type=ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+    # t3.micro (1 GiB, no swap) ran out of memory during SSM patch runs, which
+    # killed the GitHub Actions runner that model-ad-data-manager imports data with
+    instance_type=ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
     ami_id="ami-074a6fac5773fe883",
     ami_region="us-east-1",
 )

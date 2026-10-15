@@ -13,7 +13,7 @@ def test_bastion_created():
 
     bastion_props = BastionProps(
         key_name=key_name,
-        instance_type=ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+        instance_type=ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
         ami_id="ami-074a6fac5773fe883",
         ami_region="us-east-1",
     )
@@ -29,7 +29,7 @@ def test_bastion_created():
         "AWS::EC2::Instance",
         {
             "KeyName": key_name,
-            "InstanceType": "t3.micro",
+            "InstanceType": "t3.small",
             "Tags": assertions.Match.array_with(
                 [
                     {"Key": "ManagedInstanceMaintenanceTarget", "Value": "yes"},
