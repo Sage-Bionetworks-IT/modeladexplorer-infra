@@ -357,7 +357,7 @@ To run a query:
 2. Open **Saved queries** and pick a query from the `model-ad-<env>` folder. This also selects its log group.
 3. Choose a time range that covers the deploy or data release, then **Run query**
 
-To narrow down the results, add a filter, for example `| filter service like /model-ad-app/` in
+To narrow down the results, add a filter, for example `| filter service like /model-ad-.*-app/` in
 `Deploy timeline`. Event fields are listed under **Discovered fields** in the query results.
 
 # CI Workflow
