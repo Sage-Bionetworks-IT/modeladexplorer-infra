@@ -167,6 +167,7 @@ cython_debug/
 
 # temp files
 temp/
+tmp/
 
 # npm
 node_modules/
