@@ -6,6 +6,7 @@ from aws_cdk import aws_ec2 as ec2
 from src.ecs_stack import EcsStack
 from src.helpers.github_helpers import get_image_version, get_short_commit_sha
 from src.load_balancer_stack import LoadBalancerStack
+from src.monitoring_stack import MonitoringStack
 from src.network_stack import NetworkStack
 from src.service_props import ServiceProps, ServiceSecret
 from src.service_stack import LoadBalancedServiceStack, ServiceStack
@@ -273,6 +274,14 @@ apex_stack = LoadBalancedServiceStack(
 apex_stack.add_dependency(app_stack)
 apex_stack.add_dependency(api_stack)
 apex_stack.add_dependency(api_next_stack)
+
+monitoring_stack = MonitoringStack(
+    scope=cdk_app,
+    construct_id=f"{stack_name_prefix}-monitoring",
+    name_prefix=stack_name_prefix,
+    cluster=ecs_stack.cluster,
+    api_next_log_group=api_next_stack.log_group,
+)
 
 bastion_props = BastionProps(
     key_name="agora-access",
