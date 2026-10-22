@@ -8,11 +8,36 @@ from constructs import Construct
 ECS_EVENT_DETAIL_TYPES = ["ECS Task State Change", "ECS Deployment State Change"]
 
 
+def add_cache_clear_query(
+    scope: Construct, name_prefix: str, log_group: logs.ILogGroup
+) -> logs.QueryDefinition:
+    """
+    Saves a Logs Insights query for an API service's data release cache clears.
+
+    Add it to the API service's own stack, so the query is removed along with the service
+    and no other stack depends on the service's log group.
+    """
+    return logs.QueryDefinition(
+        scope,
+        "DataReleaseCacheClearsQuery",
+        query_definition_name=f"{name_prefix}/Data release cache clears",
+        log_groups=[log_group],
+        query_string=logs.QueryString(
+            fields=["@timestamp", "@logStream as task", "@message"],
+            # matches the api-cache-invalidation library's startup line ("Initial data
+            # version observed" / "Initial data release observed") and its cache clears
+            # ("...; clearing caches", and "clearing caches again" from MG-1028)
+            filter_statements=["@message like /Initial data|clearing caches/"],
+            sort="@timestamp asc",
+        ),
+    )
+
+
 class MonitoringStack(cdk.Stack):
     """
-    Keeps the history of deploys and data releases:
+    Keeps the history of deploys:
       - sends the cluster's ECS task and deployment events to a CloudWatch Logs group
-      - saves Logs Insights queries for deploy timelines, deployments and API cache clears
+      - saves Logs Insights queries for deploy timelines, deployments and rollbacks
     """
 
     def __init__(
@@ -21,7 +46,6 @@ class MonitoringStack(cdk.Stack):
         construct_id: str,
         name_prefix: str,
         cluster: ecs.ICluster,
-        api_next_log_group: logs.ILogGroup,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -91,20 +115,6 @@ class MonitoringStack(cdk.Stack):
                     "detail.reason as reason",
                 ],
                 filter_statements=['`detail-type` = "ECS Deployment State Change"'],
-                sort="@timestamp asc",
-            ),
-        )
-        logs.QueryDefinition(
-            self,
-            "DataReleaseCacheClearsQuery",
-            query_definition_name=f"{name_prefix}/Data release cache clears",
-            log_groups=[api_next_log_group],
-            query_string=logs.QueryString(
-                fields=["@timestamp", "@logStream as task", "@message"],
-                # matches the api-cache-invalidation library's startup line ("Initial data
-                # version observed" / "Initial data release observed") and its cache clears
-                # ("...; clearing caches", and "clearing caches again" from MG-1028)
-                filter_statements=["@message like /Initial data|clearing caches/"],
                 sort="@timestamp asc",
             ),
         )

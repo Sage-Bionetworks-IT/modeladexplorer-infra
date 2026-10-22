@@ -336,10 +336,11 @@ AWS_PROFILE=itsandbox-dev AWS_DEFAULT_REGION=us-east-1 aws ecs execute-command \
 ECS only keeps the last 100 events per service, so the `model-ad-<env>-monitoring` stack sends
 the cluster's ECS events to the `/aws/events/model-ad-<env>/ecs` log group, kept for 4 months:
 
-- `ECS Task State Change`: each task's status (`PENDING`, `RUNNING`, `STOPPED`), health and task definition
+- `ECS Task State Change`: each task's status (`PENDING`, `RUNNING`, `STOPPED`), desired status and task definition
 - `ECS Deployment State Change`: deployments starting, completing, failing and rolling back
 
-It also saves Logs Insights queries in a `model-ad-<env>` folder:
+Logs Insights queries are saved in a `model-ad-<env>` folder. The first two are in the monitoring
+stack; the cache clears query is in the `model-ad-<env>-api-next` stack, so it's removed along with api-next:
 
 - `Deploy timeline` (ECS events log group): task status changes per service and task definition.
   For app, api and api-next, old and new versions both take traffic from when the new task's
