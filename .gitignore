@@ -174,7 +174,14 @@ node_modules/
 # AWS CDK
 cdk.out
 
-# Claude Code (personal files; .mcp.json and .claude/settings.json are shared)
+# Claude Code
 .claude/settings.local.json
 .claude/worktrees/
 CLAUDE.local.md
+.claude-user/
+
+# AWS CLI
+.aws/
+
+# Dev Container
+.devcontainer/devcontainer-lock.json
