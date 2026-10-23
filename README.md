@@ -331,6 +331,35 @@ AWS_PROFILE=itsandbox-dev AWS_DEFAULT_REGION=us-east-1 aws ecs execute-command \
   --command "/bin/sh" --interactive
 ```
 
+# Deploy and data release history
+
+ECS only keeps the last 100 events per service, so the `model-ad-<env>-monitoring` stack sends
+the cluster's ECS events to the `/aws/events/model-ad-<env>/ecs` log group, kept for 4 months:
+
+- `ECS Task State Change`: each task's status (`PENDING`, `RUNNING`, `STOPPED`), desired status and task definition
+- `ECS Deployment State Change`: deployments starting, completing, failing and rolling back
+
+Logs Insights queries are saved in a `model-ad-<env>` folder. The first two are in the monitoring
+stack; the cache clears query is in the `model-ad-<env>-api-next` stack, so it's removed along with api-next:
+
+- `Deploy timeline` (ECS events log group): task status changes per service and task definition.
+  For app, api and api-next, old and new versions both take traffic from when the new task's
+  `lastStatus` becomes `RUNNING` until the old task's `desiredStatus` becomes `STOPPED`.
+  ECS task events don't include health status.
+- `Deployments and rollbacks` (ECS events log group): deployment state changes per service.
+- `Data release cache clears` (`api-next` container log group): each `api-next` task's
+  `Initial data ... observed` line at startup, its `... changed ...; clearing caches` line when it
+  detects a data release, and its `clearing caches again` line one poll (about a minute) later.
+
+To run a query:
+
+1. Open the [CloudWatch Logs Insights console](https://us-east-1.console.aws.amazon.com/cloudwatch/home?region=us-east-1#logsV2:logs-insights) in the environment's account
+2. Open **Saved queries** and pick a query from the `model-ad-<env>` folder. This also selects its log group.
+3. Choose a time range that covers the deploy or data release, then **Run query**
+
+To narrow down the results, add a filter, for example `| filter service like /model-ad-.*-app/` in
+`Deploy timeline`. Event fields are listed under **Discovered fields** in the query results.
+
 # CI Workflow
 
 This repo has been set up to use Github Actions CI to continuously deploy the application.
