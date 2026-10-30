@@ -106,10 +106,6 @@ class ServiceStack(cdk.Stack):
                 self, f"sm-secrets-{secret.environment_key}", secret.secret_name
             )
 
-        log_driver = ecs.LogDrivers.aws_logs(
-            stream_prefix=f"{construct_id}",
-            log_retention=logs.RetentionDays.FOUR_MONTHS,
-        )
         self.container = self.task_definition.add_container(
             props.container_name,
             image=image,
@@ -123,12 +119,13 @@ class ServiceStack(cdk.Stack):
                     protocol=ecs.Protocol.TCP,
                 )
             ],
-            logging=log_driver,
+            logging=ecs.LogDrivers.aws_logs(
+                stream_prefix=f"{construct_id}",
+                log_retention=logs.RetentionDays.FOUR_MONTHS,
+            ),
             command=props.container_command,
             health_check=props.container_healthcheck,
         )
-        # the container's log group, created when the log driver is bound above
-        self.log_group = log_driver.log_group
 
         # attach ECS task to ECS cluster
         self.service = ecs.FargateService(
