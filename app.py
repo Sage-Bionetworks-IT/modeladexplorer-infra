@@ -240,9 +240,8 @@ app_props = ServiceProps(
     container_env_vars={
         "APP_VERSION": app_version,
         "COMMIT_SHA": short_commit_sha,
-        "CSR_API_URL": f"https://{fully_qualified_domain_name}/api/v1",
-        # TODO: update this port when model-ad-api is removed from this stack
-        "SSR_API_URL": "http://model-ad-api:3333/v1",
+        "CSR_API_URL": f"https://{fully_qualified_domain_name}/api/v2",
+        "SSR_API_URL": "http://model-ad-api-next:3334/v2",
         "ENVIRONMENT": environment,
         "GOOGLE_TAG_MANAGER_ENABLED": environment_variables["GTM_ENABLED"],
         "GOOGLE_TAG_MANAGER_ID": environment_variables["GTM_CONTAINER_ID"],
