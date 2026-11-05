@@ -167,9 +167,22 @@ cython_debug/
 
 # temp files
 temp/
+tmp/
 
 # npm
 node_modules/
 
 # AWS CDK
 cdk.out
+
+# Claude Code
+.claude/settings.local.json
+.claude/worktrees/
+CLAUDE.local.md
+.claude-user/
+
+# AWS CLI
+.aws/
+
+# Dev Container
+.devcontainer/devcontainer-lock.json
