@@ -5,7 +5,7 @@
     "AWS_CONFIG_FILE": "${containerWorkspaceFolder}/.aws/config"
   },
   "features": {
-    "ghcr.io/devcontainers/features/node:2.1.1": {
+    "ghcr.io/devcontainers/features/node:2.1.2": {
       "version": "22.6.0"
     },
     "ghcr.io/devcontainers/features/python:1.8.0": {
